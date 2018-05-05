@@ -1,0 +1,262 @@
+sensor:
+  - platform: rest
+    name: "ESXI_mem_free"
+    resource: https://192.168.1.60/value.json
+    verify_ssl: false
+    value_template: '{{ value_json.Memory_Free_MByes }}'
+    unit_of_measurement: MB
+    json_attributes:
+      - PCPU_Load
+      - Disks
+
+  - platform: template
+    sensors:
+      esxi_cpu_load1m:
+        friendly_name: 'ESXI CPU 1分钟平均负载'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.PCPU_Load.Load1Minute }}'
+        #unit_of_measurement: '%'
+      esxi_cpu_load15m:
+        friendly_name: 'ESXI CPU 15分钟平均负载'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.PCPU_Load.Load15Minutes }}'
+        #unit_of_measurement: '%'
+      esxi_cpu_load5m:
+        friendly_name: 'ESXI CPU 5分钟平均负载'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.PCPU_Load.Load5Minutes }}'
+        #unit_of_measurement: '%'
+
+# 磁盘DATA SMART
+# "Multi Zone Error Rate" 多区域错误率
+# "UDMA CRC Error Count"  UDMA CRC错误计数
+# "Offline Uncorrectable" 无法修正的扇区总数 
+# "Current Pending Sector"  当前等待中扇区计数
+# "Reallocated Event Count" 重新分配事件数
+# "Temperature Celsius" 摄氏温度
+# "Load Cycle Count"  磁头加载次数
+# "Power-Off Retract Count" 断电返回计数
+# "Power Cycle Count" 磁盘通电次数
+# "Calibration Retry Count" 校准重试计数
+# "Spin Retry Count"  电机启动重试次数
+# "Power On Hours"  通电小时数
+# "Seek Error Rate" 寻道错误率
+# "Reallocated Sector Ct" 备用扇区池数量
+# "Start Stop Count"  开始停止计数
+# "Spin Up Time"  已启动时间
+# "Raw Read Error Rate" 原始读取错误率
+      esxi_disks_data_smart_1:
+        friendly_name: '原始读取错误率(Raw Read Error Rate)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Raw_Read_Error_Rate }} '
+        unit_of_measurement: '%'
+      esxi_disks_data_smart_2:
+        friendly_name: '已启动时间(Spin Up Time)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Spin_Up_Time }} '
+        unit_of_measurement: 'h'
+      esxi_disks_data_smart_3:
+        friendly_name: '开始停止计数(Start Stop Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Start_Stop_Count }} '
+        #unit_of_measurement: 'ct'
+      esxi_disks_data_smart_4:
+        friendly_name: '重新分配扇区计数(Reallocated Sector Ct)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Reallocated_Sector_Ct }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_5:
+        friendly_name: '寻道错误率(Seek Error Rate)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Seek_Error_Rate }} '
+        unit_of_measurement: '%'
+      esxi_disks_data_smart_6:
+        friendly_name: '通电小时数(Power On Hours)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Power_On_Hours }} '
+        unit_of_measurement: 'h'
+      esxi_disks_data_smart_7:
+        friendly_name: '电机启动重试次数(Spin Retry Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Spin_Retry_Count }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_8:
+        friendly_name: '校准重试计数(Calibration Retry Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Calibration_Retry_Count }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_9:
+        friendly_name: '磁盘通电次数(Power Cycle Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Power_Cycle_Count }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_10:
+        friendly_name: '断电返回计数(Power-Off Retract Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.PowerOff_Retract_Count }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_11:
+        friendly_name: '磁头加载次数(Load Cycle Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Load_Cycle_Count }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_12:
+        friendly_name: '磁盘温度(Temperature Celsius)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Temperature_Celsius }} '
+        unit_of_measurement: '℃'
+      esxi_disks_data_smart_13:
+        friendly_name: '重新分配事件数(Reallocated Event Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Reallocated_Event_Count }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_14:
+        friendly_name: '当前等待中扇区计数(Current Pending Sector)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Current_Pending_Sector }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_15:
+        friendly_name: '无法修正的扇区总数(Offline Uncorrectable)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Offline_Uncorrectable }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_16:
+        friendly_name: 'UDMA_CRC错误计数(UDMA CRC Error Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.UDMA_CRC_Error_Count }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_smart_17:
+        friendly_name: '多区域错误率(Multi Zone Error Rate)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.SMART_Attributes.Multi_Zone_Error_Rate }} '
+        unit_of_measurement: '%'
+
+# DATA 容量状况
+      esxi_disks_data_space_size:
+        friendly_name: '总容量'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.Storage_space.Size }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_space_used:
+        friendly_name: '使用容量'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.Storage_space.Used }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_space_available:
+        friendly_name: '剩余容量'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.Storage_space.Available }} '
+        #unit_of_measurement: ''
+      esxi_disks_data_space_use:
+        friendly_name: 'DATA Use%'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.DATA.Storage_space.Use }} '
+        #unit_of_measurement: ''
+
+# SSD SMART
+# "Total LBAs Written":LBA写入总数
+# "Temperature Celsius":磁盘温度
+# "Unknown Attribute":未知属性
+# "Power-Off Retract Count":关机撤回计数
+# "Power Cycle Count":磁盘通电次数
+# "Power On Hours":通电小时数
+# "Raw Read Error Rate":多区域错误率
+      esxi_disks_ssd2_smart_1:
+        friendly_name: '原始读取错误率(Raw Read Error Rate)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.SMART_Attributes.Raw_Read_Error_Rate }} '
+        unit_of_measurement: '%'
+      esxi_disks_ssd2_smart_2:
+        friendly_name: '通电小时数(Power On Hours)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.SMART_Attributes.Power_On_Hours }} '
+        unit_of_measurement: 'h'
+      esxi_disks_ssd2_smart_3:
+        friendly_name: '磁盘通电次数(Power Cycle Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.SMART_Attributes.Power_Cycle_Count }} '
+        #unit_of_measurement: 'ct'
+      esxi_disks_ssd2_smart_4:
+        friendly_name: '断电返回计数(Power-Off Retract Count)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.SMART_Attributes.PowerOff_Retract_Count }} '
+        #unit_of_measurement: ''
+      esxi_disks_ssd2_smart_5:
+        friendly_name: '磁盘温度(Temperature Celsius)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.SMART_Attributes.Temperature_Celsius }} '
+        unit_of_measurement: '℃'
+      esxi_disks_ssd2_smart_6:
+        friendly_name: 'LBA写入总数(Total LBAs Written)'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.SMART_Attributes.Total_LBAs_Written }} '
+        unit_of_measurement: 'LBAs'
+
+# SSD2 容量状况
+      esxi_disks_ssd2_space_size:
+        friendly_name: '总容量'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.Storage_space.Size }} '
+        #unit_of_measurement: ''
+      esxi_disks_ssd2_space_used:
+        friendly_name: '使用容量'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.Storage_space.Used }} '
+        #unit_of_measurement: ''
+      esxi_disks_ssd2_space_available:
+        friendly_name: '剩余容量'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.Storage_space.Available }} '
+        #unit_of_measurement: ''
+      esxi_disks_ssd2_space_use:
+        friendly_name: 'SSD2 Use%'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Disks.SSD2.Storage_space.Use }} '
+        #unit_of_measurement: ''
+
+group:
+  esxi_view:
+    view: yes
+    name: 'ESXI资源监控'
+    entities:
+      - sensor.esxi_cpu_load1m
+      - sensor.esxi_cpu_load5m
+      - sensor.esxi_cpu_load15m
+      - sensor.esxi_mem_free
+      - group.esxi_system_info
+      - group.disk_data_space_view
+      - group.disk_ssd2_space_view
+      - group.disk_data_smart_view
+      - group.disk_ssd2_smart_view
+
+  esxi_system_info:
+    view: no
+    name: 'CPU Memory'
+    entities:
+      - sensor.esxi_cpu_load1m
+      - sensor.esxi_cpu_load5m
+      - sensor.esxi_cpu_load15m
+      - sensor.esxi_mem_free
+
+  disk_data_smart_view:
+    view: no
+    name: 'DATA SMART'
+    entities:
+      - sensor.esxi_disks_data_smart_1
+      - sensor.esxi_disks_data_smart_2
+      - sensor.esxi_disks_data_smart_3
+      - sensor.esxi_disks_data_smart_4
+      - sensor.esxi_disks_data_smart_5
+      - sensor.esxi_disks_data_smart_6
+      - sensor.esxi_disks_data_smart_7
+      - sensor.esxi_disks_data_smart_8
+      - sensor.esxi_disks_data_smart_9
+      - sensor.esxi_disks_data_smart_10
+      - sensor.esxi_disks_data_smart_11
+      - sensor.esxi_disks_data_smart_12
+      - sensor.esxi_disks_data_smart_13
+      - sensor.esxi_disks_data_smart_14
+      - sensor.esxi_disks_data_smart_15
+      - sensor.esxi_disks_data_smart_16
+      - sensor.esxi_disks_data_smart_17
+
+  disk_data_space_view:
+    view: no
+    name: 'DATA 容量状况'
+    entities:
+      - sensor.esxi_disks_data_space_size
+      - sensor.esxi_disks_data_space_used
+      - sensor.esxi_disks_data_space_available
+      - sensor.esxi_disks_data_space_use
+
+  disk_ssd2_smart_view:
+    view: no
+    name: 'SSD2 SMART'
+    entities:
+      - sensor.esxi_disks_ssd2_smart_1
+      - sensor.esxi_disks_ssd2_smart_2
+      - sensor.esxi_disks_ssd2_smart_3
+      - sensor.esxi_disks_ssd2_smart_4
+      - sensor.esxi_disks_ssd2_smart_5
+      - sensor.esxi_disks_ssd2_smart_6
+
+  disk_ssd2_space_view:
+    view: no
+    name: 'SSD2 容量状况'
+    entities:
+      - sensor.esxi_disks_ssd2_space_size
+      - sensor.esxi_disks_ssd2_space_used
+      - sensor.esxi_disks_ssd2_space_available
+      - sensor.esxi_disks_ssd2_space_use
+homeassistant:
+  customize:
+    sensor.esxi_mem_free:
+      friendly_name: 'ESXI 剩余内存'
+      homebridge_hidden: true
+      icon: mdi:home-assistant
