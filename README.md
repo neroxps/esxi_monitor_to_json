@@ -13,7 +13,7 @@
 # 使用方法
 
 1. 开启 ESXI 的 SSH 连入。
-2. 上传 **[monitoring-1.0.0-5.x86_64.vib](https://raw.githubusercontent.com/neroxps/esxi_monitor_to_json/master/monitor/build/monitoring-1.0.0-5.x86_64.vib)** 至 ESXI 存储内。
+2. 上传 **[monitoring-1.0.0-6.x86_64.vib](https://raw.githubusercontent.com/neroxps/esxi_monitor_to_json/master/monitor/build/monitoring-1.0.0-6.x86_64.vib)** 至 ESXI 存储内。
 3. 运行 `esxcli software acceptance set --level=CommunitySupported` 将软件包接受级别改成社区
 4. 运行 `esxcli software vib install -v /vmfs/volumes/SSD2/monitoring-1.0.0-6.x86_64.vib -f` 安装我做好的软件包，其中 **SSD2** 请修改为自己存储的名字。
 5. 运行 `ps -c |grep "monitoring_value_to_json.sh" | grep -v grep` 如果回显有返回的话证明程序正常运行。
@@ -66,3 +66,14 @@ Removal Result
 执行完以上安装过程后，你就可以通过  **https://192.168.1.10/value.json** 下载得到监控生成的 json 文件，这时候就可以参考 **[Template Sensor](https://www.home-assistant.io/components/sensor.template/)** 编写 homeassistant 的配置了。
 
 文末我会放上我的 home-assistant 配置作为参考。
+
+# 更新日志
+
+## [1.0.0-6]
+### Added
+- 添加 `.Memory.Used_Pct` 字段。
+
+### Fixed
+- 将获取内存的方法从 `esxtop` 改为 `vsish -e get /memory/comprehensive` 大大提高内存获取速度。
+- 内存获取时间由 15分钟一次改为5秒一次，与 CPU 同步。
+- JSON `Memory_Free_MByes` 路径修改为 `Memory.Free_GB`,单位从 `MB` 改为 `GB`
