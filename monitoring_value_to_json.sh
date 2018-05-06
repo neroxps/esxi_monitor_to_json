@@ -14,9 +14,6 @@ global_sleep_num='5'
 # 设置硬盘检查时间，默认 3600 一小时检查一次
 gds_sleep_time=3600
 gds_run_time=1524997803
-# 设置空余内存检查时间，默认 900 十五分钟检查一次
-gmf_sleep_time=900
-gmf_run_time=1524997803
 # 设置硬盘空间检查时间，默认 900 十五分钟检查一次
 gss_sleep_time=900
 gss_run_time=1524997803
@@ -66,14 +63,15 @@ get_cpu_load() {
 
 # 通过 esxtop 获取剩余内存，由于 esxtop 消耗资源比较大，建议将 memory_chack_sleep_time 设置为 900 十五分钟检查一次
 get_memory_free(){
-	local import_entity_file="/tmp/esxtop_null_entity"
-	if [[ ! -f "${import_entity_file}" ]]; then
-		touch "${import_entity_file}"
-	fi
-	local memory_free=$(esxtop -b -n 1 -import-entity "${import_entity_file}"  | awk '{ print $2}' | awk -F',' '{print $26}'| sed ':a;N;s/\n//g;ba' | sed 's/\"//g')
-	local key='.Memory_Free_MByes'
+	local memory_comprehensive=$(vsish -e get /memory/comprehensive)
+	local memory_free=$(echo "${memory_comprehensive}" | grep  "Free" | awk -F':' '{sub(" KB","",$2);print $2}')
+	local memory_total=$(echo "${memory_comprehensive}" | grep  "Physical memory estimate" | awk -F':' '{sub(" KB","",$2);print $2}')
+	local memory_uesd_pct=$(echo | awk '{printf ("%0.2f\n",(a-b)/a*100)}' a=${memory_total} b=${memory_free})
+	memory_free=$(echo ${memory_free} | awk '{printf ("%0.2f\n",$0/1048576)}')
+	local key='.Memory.Free_GB'
 	json=$(json_update "${key}" "${memory_free}" "${json}")
-	gmf_run_time=$(date +%s)
+	key='.Memory.Used_Pct'
+	json=$(json_update "${key}" "${memory_uesd_pct}" "${json}")
 }
 
 get_storage_space(){
@@ -84,7 +82,7 @@ get_storage_space(){
 		local value_num=1
 		while [[ ${value_num} -le 4 ]]; do
 			local attribute_name=$(echo "${all_attribute_name}" | awk -v a=${value_num} '{print $a}')
-			local key='.Disks."'${disk_volume_name}'".Storage_space."'${attribute_name}'".'
+			local key='.Disks."'${disk_volume_name}'".Storage_space."'${attribute_name}'"'
 			local value=$(echo "${storage_space}" | grep ${disk_volume_name} | awk -v a=${value_num} '{print $a}' )
 			json=$(json_update "${key}" "${value}" "${json}")
 			let value_num++
@@ -106,18 +104,15 @@ disk_list=$(esxcli storage vmfs extent list | tail +3)
 #main
 while true; do
 	get_cpu_load
+	get_memory_free
 	if  [[ $(expr $(date +%s) - ${gds_run_time} ) -gt ${gds_sleep_time} ]]; then
 		get_disk_smart
 	fi
-
-	if  [[ $(expr $(date +%s) - ${gmf_run_time} ) -gt ${gmf_sleep_time} ]]; then
-		get_memory_free
-	fi
-
 	if  [[ $(expr $(date +%s) - ${gss_run_time} ) -gt ${gss_sleep_time} ]]; then
 		get_storage_space
 	fi
 
 	echo "${json}" > ${json_file_path}
+	echo "${json}"
 sleep ${global_sleep_num}
 done
