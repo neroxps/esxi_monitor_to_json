@@ -1,16 +1,21 @@
 sensor:
   - platform: rest
-    name: "ESXI_mem_free"
+    name: "esxi_mem_free"
     resource: https://192.168.1.60/value.json
     verify_ssl: false
-    value_template: '{{ value_json.Memory_Free_MByes }}'
-    unit_of_measurement: MB
+    value_template: '{{ value_json.Memory.Free_GB }}'
+    unit_of_measurement: GB
     json_attributes:
       - PCPU_Load
       - Disks
+      - Memory
 
   - platform: template
     sensors:
+      esxi_mem_used:
+        friendly_name: 'ESXI 剩余内存百分比'
+        value_template: '{{ states.sensor.esxi_mem_free.attributes.Memory.Used_Pct }}'
+        unit_of_measurement: '%'
       esxi_cpu_load1m:
         friendly_name: 'ESXI CPU 1分钟平均负载'
         value_template: '{{ states.sensor.esxi_mem_free.attributes.PCPU_Load.Load1Minute }}'
@@ -203,6 +208,7 @@ group:
       - sensor.esxi_cpu_load5m
       - sensor.esxi_cpu_load15m
       - sensor.esxi_mem_free
+      - sensor.esxi_mem_used
 
   disk_data_smart_view:
     view: no
