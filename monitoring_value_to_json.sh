@@ -76,14 +76,14 @@ get_memory_free(){
 
 get_storage_space(){
 	local disks=$(echo "${disk_list}" | awk '{print $1}')
-	local storage_space=$(df -h | awk '{$1="";print}')
+	local storage_space=$(df | awk '{$1="";print}')
 	local all_attribute_name=$(echo "${storage_space}" | sed -n '1p' | sed 's/%//g')
 	for disk_volume_name in ${disks}; do
 		local value_num=1
 		while [[ ${value_num} -le 4 ]]; do
 			local attribute_name=$(echo "${all_attribute_name}" | awk -v a=${value_num} '{print $a}')
 			local key='.Disks."'${disk_volume_name}'".Storage_space."'${attribute_name}'"'
-			local value=$(echo "${storage_space}" | grep ${disk_volume_name} | awk -v a=${value_num} '{print $a}' )
+			local value=$(echo "${storage_space}" | grep ${disk_volume_name} | awk -v a=${value_num} '{b=$a/1024/1024;printf ("%0.0f\n",b)}' )
 			json=$(json_update "${key}" "${value}" "${json}")
 			let value_num++
 		done
