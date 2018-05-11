@@ -12,11 +12,11 @@
 
 # 使用方法
 
-**1. 开启 ESXI 的 SSH 连入。**
-**2. 上传 [monitoring-1.0.0-6.x86_64.vib](https://raw.githubusercontent.com/neroxps/esxi_monitor_to_json/master/monitor/build/monitoring-1.0.0-6.x86_64.vib) 至 ESXI 存储内。**
-**3. 运行 `esxcli software acceptance set --level=CommunitySupported` 将软件包接受级别改成社区**
-**4. 运行 `esxcli software vib install -v /vmfs/volumes/SSD2/monitoring-1.0.0-6.x86_64.vib -f` 安装我做好的软件包，其中 **SSD2** 请修改为自己存储的名字。**
-**5. 运行 `ps -c |grep "monitoring_value_to_json.sh" | grep -v grep` 如果回显有返回的话证明程序正常运行。**
+1. 开启 ESXI 的 SSH 连入。
+2. 上传 [VIB 安装包](https://github.com/neroxps/esxi_monitor_to_json/releases/latest) 至 ESXI 存储内。
+3. 运行 `esxcli software acceptance set --level=CommunitySupported` 将软件包接受级别改成社区**
+4. 运行 `esxcli software vib install -v /vmfs/volumes/SSD2/monitoring-1.0.0-6.x86_64.vib -f` 安装我做好的软件包，其中 **SSD2** 请修改为自己存储的名字。
+5. 运行 `ps -c |grep "monitoring_value_to_json.sh" | grep -v grep` 如果回显有返回的话证明程序正常运行。
 
 ```
 [root@esxi:~] esxcli software vib install -v /vmfs/volumes/SSD2/monitoring-1.0.0-6.x86_64.vib -f
