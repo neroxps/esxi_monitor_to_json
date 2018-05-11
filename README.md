@@ -69,6 +69,10 @@ Removal Result
 
 # 更新日志
 
+## [1.0.0-7]
+### Fixed
+ - 固定硬盘容量为GB，取消原来用 df -h 获取后 HA 无法统计曲线的 bug
+
 ## [1.0.0-6]
 ### Added
 - 添加 `.Memory.Used_Pct` 字段。
