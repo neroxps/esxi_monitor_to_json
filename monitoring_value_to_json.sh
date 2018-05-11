@@ -77,13 +77,18 @@ get_memory_free(){
 get_storage_space(){
 	local disks=$(echo "${disk_list}" | awk '{print $1}')
 	local storage_space=$(df | awk '{$1="";print}')
-	local all_attribute_name=$(echo "${storage_space}" | sed -n '1p' | sed 's/%//g')
+	local all_attribute_name=$(echo "${storage_space}" | sed -n '1p' | sed 's/%//g' | sed 's/Bytes/Size/')
 	for disk_volume_name in ${disks}; do
 		local value_num=1
 		while [[ ${value_num} -le 4 ]]; do
 			local attribute_name=$(echo "${all_attribute_name}" | awk -v a=${value_num} '{print $a}')
 			local key='.Disks."'${disk_volume_name}'".Storage_space."'${attribute_name}'"'
-			local value=$(echo "${storage_space}" | grep ${disk_volume_name} | awk -v a=${value_num} '{b=$a/1024/1024;printf ("%0.0f\n",b)}' )
+			local value=$(echo "${storage_space}" | grep ${disk_volume_name} | \
+							if [[ ${attribute_name} == "Use" ]];then 
+								awk -v a=${value_num} '{sub("%","",$a);print $a}' 
+							else
+								awk -v a=${value_num} '{b=$a/1024/1024/1024;printf ("%0.1f\n",b)}'
+							fi)
 			json=$(json_update "${key}" "${value}" "${json}")
 			let value_num++
 		done
@@ -113,6 +118,5 @@ while true; do
 	fi
 
 	echo "${json}" > ${json_file_path}
-	echo "${json}"
 sleep ${global_sleep_num}
 done
